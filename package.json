@@ -1,0 +1,54 @@
+{
+  "name": "merlin-feedback",
+  "version": "1.0.0",
+  "description": "JavaScript bindings for Blackbird's Merlin Feedback API",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blackbirdtech/merlin-feedback.git"
+  },
+  "keywords": [
+    "javascript",
+    "es6",
+    "jspm"
+  ],
+  "author": "davis <davis@blackbird.am>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/blackbirdtech/merlin-feedback/issues"
+  },
+  "homepage": "https://github.com/blackbirdtech/merlin-feedback#readme",
+  "devDependencies": {
+    "jspm": "^0.17.0-beta.14"
+  },
+  "jspm": {
+    "name": "merlin-feedback",
+    "main": "merlin-feedback.js",
+    "directories": {
+      "lib": "src"
+    },
+    "devDependencies": {
+      "babel-plugin-transform-flow-strip-types": "npm:babel-plugin-transform-flow-strip-types@^6.8.0",
+      "buffer": "github:jspm/nodelibs-buffer@^0.2.0-alpha",
+      "events": "github:jspm/nodelibs-events@^0.2.0-alpha",
+      "fs": "github:jspm/nodelibs-fs@^0.2.0-alpha",
+      "net": "github:jspm/nodelibs-net@^0.2.0-alpha",
+      "path": "github:jspm/nodelibs-path@^0.2.0-alpha",
+      "plugin-babel": "npm:systemjs-plugin-babel@^0.0.10",
+      "process": "github:jspm/nodelibs-process@^0.2.0-alpha",
+      "stream": "github:jspm/nodelibs-stream@^0.2.0-alpha",
+      "tty": "github:jspm/nodelibs-tty@^0.2.0-alpha",
+      "util": "github:jspm/nodelibs-util@^0.2.0-alpha"
+    },
+    "overrides": {
+      "npm:inherits@2.0.1": {
+        "ignore": [
+          "test.js"
+        ]
+      }
+    }
+  }
+}
