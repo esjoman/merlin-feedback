@@ -8,6 +8,7 @@ SystemJS.config({
           "loader": "plugin-babel",
           "babelOptions": {
             "plugins": [
+              "babel-plugin-syntax-flow",
               "babel-plugin-transform-flow-strip-types"
             ]
           }
@@ -24,9 +25,12 @@ SystemJS.config({
     "github:*/*.json"
   ],
   map: {
+    "babel-plugin-syntax-flow": "npm:babel-plugin-syntax-flow@6.8.0",
     "babel-plugin-transform-flow-strip-types": "npm:babel-plugin-transform-flow-strip-types@6.8.0",
     "buffer": "github:jspm/nodelibs-buffer@0.2.0-alpha",
+    "es6-promise": "npm:es6-promise@3.2.1",
     "events": "github:jspm/nodelibs-events@0.2.0-alpha",
+    "fetch": "github:github/fetch@1.0.0",
     "fs": "github:jspm/nodelibs-fs@0.2.0-alpha",
     "net": "github:jspm/nodelibs-net@0.2.0-alpha",
     "path": "github:jspm/nodelibs-path@0.2.0-alpha",
@@ -49,16 +53,16 @@ SystemJS.config({
     },
     "npm:babel-plugin-syntax-flow@6.8.0": {
       "map": {
-        "babel-runtime": "npm:babel-runtime@6.6.1"
+        "babel-runtime": "npm:babel-runtime@6.9.0"
       }
     },
     "npm:babel-plugin-transform-flow-strip-types@6.8.0": {
       "map": {
         "babel-plugin-syntax-flow": "npm:babel-plugin-syntax-flow@6.8.0",
-        "babel-runtime": "npm:babel-runtime@6.6.1"
+        "babel-runtime": "npm:babel-runtime@6.9.0"
       }
     },
-    "npm:babel-runtime@6.6.1": {
+    "npm:babel-runtime@6.9.0": {
       "map": {
         "core-js": "npm:core-js@2.4.0"
       }

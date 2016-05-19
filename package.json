@@ -30,7 +30,12 @@
     "directories": {
       "lib": "src"
     },
+    "dependencies": {
+      "es6-promise": "npm:es6-promise@^3.2.1",
+      "fetch": "github:github/fetch@^1.0.0"
+    },
     "devDependencies": {
+      "babel-plugin-syntax-flow": "npm:babel-plugin-syntax-flow@^6.8.0",
       "babel-plugin-transform-flow-strip-types": "npm:babel-plugin-transform-flow-strip-types@^6.8.0",
       "buffer": "github:jspm/nodelibs-buffer@^0.2.0-alpha",
       "events": "github:jspm/nodelibs-events@^0.2.0-alpha",
@@ -38,10 +43,12 @@
       "net": "github:jspm/nodelibs-net@^0.2.0-alpha",
       "path": "github:jspm/nodelibs-path@^0.2.0-alpha",
       "plugin-babel": "npm:systemjs-plugin-babel@^0.0.10",
-      "process": "github:jspm/nodelibs-process@^0.2.0-alpha",
       "stream": "github:jspm/nodelibs-stream@^0.2.0-alpha",
       "tty": "github:jspm/nodelibs-tty@^0.2.0-alpha",
       "util": "github:jspm/nodelibs-util@^0.2.0-alpha"
+    },
+    "peerDependencies": {
+      "process": "github:jspm/nodelibs-process@^0.2.0-alpha"
     },
     "overrides": {
       "npm:inherits@2.0.1": {
