@@ -1,3 +1,6 @@
+/* @flow */
+/* global fetch */
+
 type Event = 
  | 'serp'
  | 'click'
@@ -8,92 +11,143 @@ type Id = string | number;
 
 type FeedbackParams = {
   qid?: Id;
-  docids: Array<Id>;
-  sid?: Id;
+  q?: string; // for serp calls
+  docids?: Array<Id>;
+  numfound?: number;
+  start?: number;
+  num?: number;
   uid?: Id;
+  sid?: Id;
 };
 
-type SerpParams = {
-  qid?: Id;
-  q: string;
-  docids: Array<Id>;
+type SerpRegex = RegExp | (url: string) => boolean;
+
+type ExtraOptions = {
+  href: string;
+  referrer: string;
+  storage: Storage
 };
 
-const SESSION_STORAGE_KEY: string = 'bbqid';
-const ERROR_MSG: string = `merlinFeedback takes 4 required arguments: company, environment, instance, preserve.
+const ERROR_MSG: string = `merlinFeedback takes 4 required arguments: company, environment, instance, serpRegex.
   company: the name of the company,
   environment: 'dev', 'staging', or 'prod',
   instance: the name of the instance,
-  preserve: a boolean that should be false when the user has navigated to a page that is no longer related to the SERP.`;
+  serpRegex: a function or regex that returns truthy for SERP urls.`;
 
-class MerlinFeedback {
-  constructor(company: string, env: string, instance: string, preserve: boolean, browser: boolean) {
-    if (!company || !env || !instance || typeof preserve !== 'boolean' || typeof browser !== 'boolean') {
-      throw new Error(ERROR_MSG);
-    }
-    this.url = `https://search-${env}.search.blackbird.am/${company}.${env}.${instance}/feedback`;
-    this.browser = browser;
-    if (!preserve) {
-      window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
-    }
-  }
-  click(options: FeedbackParams, callback?) {
-    this._registerEvent('click', options, callback);
-  }
-  cartAdd(options: FeedbackParams, callback?) {
-    this._registerEvent('cartAdd', options, callback);
-  }
-  purchase(options: FeedbackParams, callback?) {
-    this._registerEvent('purchase', options, callback);
-  }
-  serp(options: SerpParams, callback?) {
-    let qid = this._qid();
-    this._registerEvent('serp', {...options, qid}, callback);
-  }
-  _qid(): string {
-    // generates a qid, stores it in sessionStorage under SESSION_STORAGE_KEY, and returns it
-    const key = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-      return v.toString(16);
-    });
-    if (this.browser) {
-      window.sessionStorage.setItem(SESSION_STORAGE_KEY, key);
-    }
-    return key;
-  }
-  _registerEvent(event: Event, options: FeedbackParams | SerpParams, callback?) {
-    let xhr = new XMLHttpRequest();
-    if (callback) {
-      xhr.addEventListener('load', callback);
-    }
-    if (event === 'serp') {
-      xhr.open('POST', `${this.url}/${event}`);
-      xhr.send(JSON.stringify(options));
-    } else {
-      let {qid, docids, sid, uid} = options;
-      
-      // try to get qid from sessionStorage if no qid and we are in a browser setting
-      if (!qid && this.browser) {
-        qid = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
-      }
+const SERP_ERROR_MSG: string = `merlinFeedback's 4th argument must be a RegExp or a function that returns truthy for SERP urls.`
 
-      // exit early if we still don't have a qid
-      if (!qid) {
-        return;
-      }
-      let url = `${this.url}/${event}?qid=${qid}&docids=${docids.join(',')}`;
-      if (sid) {
-        url += `&sid=${sid}`;
-      }
-      if (uid) {
-        url += `&uid=${uid}`;
-      }
-      xhr.open('GET', url);
-      xhr.send();
-    }
+const POSSIBLE_PARAMS: Array<string> = ['qid', 'q', 'numfound', 'docids', 'uid', 'sid', 'num', 'start'];
+
+const BB_CART: string = 'bbcart';
+
+function addToUrl(url: string, options: FeedbackParams, params: Array<string>): string {
+  return params.reduce((acc, curr, i) => {
+    let char = i === 0 ? '?' : '&';
+    return options[curr] ? `${acc}${char}${curr}=${options[curr]}` : acc;
+  }, url);
+}
+
+function buildUrl(company: string, env: string, instance: string): string {
+  if (!company || !env || !instance) throw new Error(ERROR_MSG);
+  return `https://search-${env}.search.blackbird.am/v1/${company}.${env}.${instance}/products/feedback`;
+}
+
+function generateNewQid(): string {
+  return '_xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+  });
+}
+
+function addOrPush(object, key, values) {
+  let existing = object[key];
+  return existing ? [...existing, ...values] : values;
+}
+
+function isSerp(serpRegex: SerpRegex, href: string): boolean {
+  if (serpRegex instanceof RegExp) return serpRegex.test(href);
+  if (typeof serpRegex === 'function') return serpRegex(href);
+  throw new Error(SERP_ERROR_MSG);
+}
+
+class Cart {
+  constructor(storage: Storage) {
+    this.storage = storage;
+  }
+  add(qid: Id, docids: Array<Id>) {
+    let cart: Object = this.get();
+    this.set({...cart, [qid]: addOrPush(cart, qid, docids)});
+  }
+  remove() {
+    // not implemented
+  }
+  get(): Object {
+    let cartString: string = this.storage.getItem(BB_CART) || '';
+    let qidDocidTuple: [string, string] = cartString.split('###');
+    return qidDocidTuple.reduce((acc, curr) => {
+      let [qid: string, docidsString: string] = curr.split(':');
+      let docids: Array<string> = docidsString.split(',');
+      return {...acc, [qid]: addOrPush(acc, qid, docids)};
+    }, {});
+  }
+  set(currentCart: Object) {
+    return currentCart.entries().map((docids, qid) => `${qid}:${docids.join(',')}`).join('###');
   }
 }
 
-export default function merlinFeedback(company: string, env: string, instance: string, preserve: boolean, browser?: boolean = true): MerlinFeedback {
-  return new MerlinFeedback(company, env, instance, preserve, browser);
+class MerlinFeedback {
+  constructor(company: string, env: string, instance: string, serpRegex: SerpRegex, {href, referrer, storage}) {
+    this.url = buildUrl(company, env, instance); // validate and build feedback url
+    this.isSerp = isSerp(serpRegex, href); // check whether href is a serp
+    this.href = href;
+    this.referrer = referrer;
+    this.storage = storage;
+    this.cart = new Cart(this.storage);
+  }
+  serp(options: FeedbackParams = {}): Promise<Response> {
+    if (!this.isSerp) return;
+    let qid = options.qid || generateNewQid();
+    this.storage.setItem(this.href, qid);
+    return this._registerEvent('serp', {...options, qid});
+  }
+  click(options: FeedbackParams = {}): Promise<Response> {
+    return this._registerEvent('click', options);
+  }
+  cartAdd({docids = [], ...options} = {}: FeedbackParams): Promise<Response> {
+    let qid: ?string = options.qid || this.storage.getItem(this.referrer);
+    if (!qid) return; // return if no qid passed in, and none found in localStorage for the previous page
+    this.cart.add(qid, docids);
+    return this._registerEvent('cartAdd', options);
+  }
+  cartRemove() {
+    // not implemented
+  }
+  purchase(options = {}: FeedbackParams): Promise<Response> | Promise<Array<Response>> {
+    if (options.docids) {
+      // use options if provided docids
+      return this._registerEvent('purchase', options);
+    }
+    // otherwise get it from cart
+    return Promise.all(this.cart.get().entries.map(([qid, docids]) => {
+      return this._registerEvent('purchase', {...options, qid, docids: docids.join(',')});
+    }));
+  }
+  _registerEvent(event: Event, options: FeedbackParams): Promise<Response> {
+    let url = addToUrl(`${this.url}/${event}`, {...options}, POSSIBLE_PARAMS);
+    return fetch(url);
+  }
+}
+
+export default function merlinFeedback(
+  company: string,
+  env: string,
+  instance: string,
+  serpRegex: SerpRegex,
+  {
+    href = window.location.href,
+    referrer = window.location.referrer,
+    storage = window.localStorage
+  }: ExtraOptions = {}
+): MerlinFeedback {
+  return new MerlinFeedback(company, env, instance, serpRegex, {href, referrer, storage});
 }
