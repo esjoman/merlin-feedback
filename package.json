@@ -31,6 +31,7 @@
       "lib": "src"
     },
     "dependencies": {
+      "core-js": "npm:core-js@^2.4.0",
       "es6-promise": "npm:es6-promise@^3.2.1",
       "fetch": "github:github/fetch@^1.0.0"
     },

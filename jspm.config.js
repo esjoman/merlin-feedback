@@ -28,6 +28,7 @@ SystemJS.config({
     "babel-plugin-syntax-flow": "npm:babel-plugin-syntax-flow@6.8.0",
     "babel-plugin-transform-flow-strip-types": "npm:babel-plugin-transform-flow-strip-types@6.8.0",
     "buffer": "github:jspm/nodelibs-buffer@0.2.0-alpha",
+    "core-js": "npm:core-js@2.4.0",
     "es6-promise": "npm:es6-promise@3.2.1",
     "events": "github:jspm/nodelibs-events@0.2.0-alpha",
     "fetch": "github:github/fetch@1.0.0",
