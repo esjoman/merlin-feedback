@@ -1,10 +1,12 @@
 /* @flow */
 /* global fetch */
 
+import 'core-js/fn/object/entries.js';
+
 type Event = 
  | 'serp'
  | 'click'
- | 'cartAdd'
+ | 'cart_add'
  | 'purchase';
 
 type Id = string | number;
@@ -70,9 +72,10 @@ function isSerp(serpRegex: SerpRegex, href: string): boolean {
   throw new Error(SERP_ERROR_MSG);
 }
 
-class Cart {
-  constructor(storage: Storage) {
+export class Cart {
+  constructor(storage = window.localStorage: Storage, key = BB_CART) {
     this.storage = storage;
+    this.key = key;
   }
   add(qid: Id, docids: Array<Id>) {
     let cart: Object = this.get();
@@ -82,20 +85,22 @@ class Cart {
     // not implemented
   }
   get(): Object {
-    let cartString: string = this.storage.getItem(BB_CART) || '';
+    let cartString: string = this.storage.getItem(this.key) || '';
     let qidDocidTuple: [string, string] = cartString.split('###');
     return qidDocidTuple.reduce((acc, curr) => {
+      if (!curr) return acc;
       let [qid: string, docidsString: string] = curr.split(':');
       let docids: Array<string> = docidsString.split(',');
       return {...acc, [qid]: addOrPush(acc, qid, docids)};
     }, {});
   }
   set(currentCart: Object) {
-    return currentCart.entries().map((docids, qid) => `${qid}:${docids.join(',')}`).join('###');
+    let cartString = Object.entries(currentCart).map(([qid, docids]) => `${qid}:${docids.join(',')}`).join('###');
+    this.storage.setItem(this.key, cartString);
   }
 }
 
-class MerlinFeedback {
+export class MerlinFeedback {
   constructor(company: string, env: string, instance: string, serpRegex: SerpRegex, {href, referrer, storage}) {
     this.url = buildUrl(company, env, instance); // validate and build feedback url
     this.isSerp = isSerp(serpRegex, href); // check whether href is a serp
@@ -111,13 +116,15 @@ class MerlinFeedback {
     return this._registerEvent('serp', {...options, qid});
   }
   click(options: FeedbackParams = {}): Promise<Response> {
-    return this._registerEvent('click', options);
+    let qid: ?string = options.qid || this.storage.getItem(this.href);
+    if (!qid) return; // return if no qid passed in, and none found in localStorage for current href
+    return this._registerEvent('click', {...options, qid});
   }
   cartAdd({docids = [], ...options} = {}: FeedbackParams): Promise<Response> {
     let qid: ?string = options.qid || this.storage.getItem(this.referrer);
     if (!qid) return; // return if no qid passed in, and none found in localStorage for the previous page
     this.cart.add(qid, docids);
-    return this._registerEvent('cartAdd', options);
+    return this._registerEvent('cart_add', {...options, qid, docids});
   }
   cartRemove() {
     // not implemented
@@ -128,17 +135,17 @@ class MerlinFeedback {
       return this._registerEvent('purchase', options);
     }
     // otherwise get it from cart
-    return Promise.all(this.cart.get().entries.map(([qid, docids]) => {
-      return this._registerEvent('purchase', {...options, qid, docids: docids.join(',')});
+    return Promise.all(Object.entries(this.cart.get()).map(([qid, docids]) => {
+      return this._registerEvent('purchase', {...options, qid, docids});
     }));
   }
   _registerEvent(event: Event, options: FeedbackParams): Promise<Response> {
-    let url = addToUrl(`${this.url}/${event}`, {...options}, POSSIBLE_PARAMS);
+    let url = addToUrl(`${this.url}/${event}`, options, POSSIBLE_PARAMS);
     return fetch(url);
   }
 }
 
-export default function merlinFeedback(
+export function init(
   company: string,
   env: string,
   instance: string,
