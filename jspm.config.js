@@ -9,7 +9,8 @@ SystemJS.config({
           "babelOptions": {
             "plugins": [
               "babel-plugin-syntax-flow",
-              "babel-plugin-transform-flow-strip-types"
+              "babel-plugin-transform-flow-strip-types",
+              "babel-plugin-transform-export-extensions"
             ]
           }
         }
@@ -26,6 +27,7 @@ SystemJS.config({
   ],
   map: {
     "babel-plugin-syntax-flow": "npm:babel-plugin-syntax-flow@6.8.0",
+    "babel-plugin-transform-export-extensions": "npm:babel-plugin-transform-export-extensions@6.8.0",
     "babel-plugin-transform-flow-strip-types": "npm:babel-plugin-transform-flow-strip-types@6.8.0",
     "buffer": "github:jspm/nodelibs-buffer@0.2.0-alpha",
     "core-js": "npm:core-js@2.4.0",
@@ -52,8 +54,19 @@ SystemJS.config({
         "stream-browserify": "npm:stream-browserify@2.0.1"
       }
     },
+    "npm:babel-plugin-syntax-export-extensions@6.8.0": {
+      "map": {
+        "babel-runtime": "npm:babel-runtime@6.9.0"
+      }
+    },
     "npm:babel-plugin-syntax-flow@6.8.0": {
       "map": {
+        "babel-runtime": "npm:babel-runtime@6.9.0"
+      }
+    },
+    "npm:babel-plugin-transform-export-extensions@6.8.0": {
+      "map": {
+        "babel-plugin-syntax-export-extensions": "npm:babel-plugin-syntax-export-extensions@6.8.0",
         "babel-runtime": "npm:babel-runtime@6.9.0"
       }
     },

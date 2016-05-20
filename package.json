@@ -37,6 +37,7 @@
     },
     "devDependencies": {
       "babel-plugin-syntax-flow": "npm:babel-plugin-syntax-flow@^6.8.0",
+      "babel-plugin-transform-export-extensions": "npm:babel-plugin-transform-export-extensions@^6.8.0",
       "babel-plugin-transform-flow-strip-types": "npm:babel-plugin-transform-flow-strip-types@^6.8.0",
       "buffer": "github:jspm/nodelibs-buffer@^0.2.0-alpha",
       "events": "github:jspm/nodelibs-events@^0.2.0-alpha",

@@ -1,6 +1,3 @@
 import 'es6-promise';
 import 'fetch';
-import {init} from './merlin-feedback.js';
-
-const merlinFeedback = {init};
-export default merlinFeedback;
+export {init, Cart, MerlinFeedback} from './lib.js';
