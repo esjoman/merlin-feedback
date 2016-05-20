@@ -1,7 +1,7 @@
 /* @flow */
 /* global fetch */
 
-import 'core-js/fn/object/entries.js';
+import './object-entries.js';
 
 type Event = 
  | 'serp'
