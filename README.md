@@ -1,13 +1,13 @@
 # Standalone Feedback Library
 
-Alongside [merlin.js](https://github.com/blackbirdtech/merlin.js), we provide a smaller [merlin-feedback](https://github.com/blackbirdtech/merlin-feedback) for the browser with just the feedback features that you can use even when you are powering your own search. This feedback helps us get past the cold start problem.
+Alongside [merlin.js](https://github.com/blackbirdtech/merlin.js), we provide a smaller [merlin-feedback](https://github.com/blackbirdtech/merlin-feedback) for the browser with just the feedback features that you can use even when you are powering your own search. This feedback helps us get past the cold start problem. Using `mf.js` will load the script asynchronously so your pageload times are not impacted. Without the `fetch` and `Promise` polyfills, the library weighs in at an easy-to-digest 5.2K.
 
 ## Quickstart
 
 Using the feedback library with a [jQuery](https://jquery.com/) enabled site would be as easy as having this code block on every page:
 
 ```html
-<script src="merlin-feedback.js"></script>
+<script src="https://cdn.rawgit.com/blackbirdtech/merlin-feedback/e967659e85d8863103810063526bfa7836e18793/dist/mf.js"></script>
 <script>
   var $NUMFOUND = $('#product-count');
   var $PRODUCTS = $('.grid-item');
@@ -23,22 +23,24 @@ Using the feedback library with a [jQuery](https://jquery.com/) enabled site wou
       return acc;
     }, {});
 
-  var mf = merlinFeedback('blackbird', 'dev', 'whiskey', /search/);
-  // .serp() will be a no-op unless the current URL matches the serp regex (the
-  // 4th argument in the merlinFeedback call)
-  mf.serp({
-    q: QARGS.keyword,
-    numfound: $NUMFOUND.val(),
-    docids: $PRODUCTS.map(function(_, product) { return product.id })
-  });
-  $PRODUCT_SELECTOR.on('click', function (e) {
-    mf.click({docids: [$(this).attr('data-id')]});
-  });
-  $ADD_TO_CART.on('click', function (e) {
-    mf.cartAdd({docids: [$(this).attr('data-id')]});
-  });
-  $FINISH_CHECKOUT.on('click', function (e) {
-    mf.purchase();
+  merlinFeedback(function() {
+    var mf = merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/);
+    // .serp() will be a no-op unless the current URL matches the serp regex (the
+    // 4th argument in the merlinFeedback call)
+    mf.serp({
+      q: QARGS.keyword,
+      numfound: $NUMFOUND.val(),
+      docids: $PRODUCTS.map(function(_, product) { return product.id })
+    });
+    $PRODUCT_SELECTOR.on('click', function (e) {
+      mf.click({docids: [$(this).attr('data-id')]});
+    });
+    $ADD_TO_CART.on('click', function (e) {
+      mf.cartAdd({docids: [$(this).attr('data-id')]});
+    });
+    $FINISH_CHECKOUT.on('click', function (e) {
+      mf.purchase();
+    });
   });
 </script>
 ```
