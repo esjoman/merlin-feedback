@@ -50,7 +50,7 @@ Using the feedback library with a [jQuery](https://jquery.com/) enabled site wou
 The API is the same as in merlin.js with some exceptions. Because we are not providing the search results, our engine needs a way of knowing which queries led to which results. For this, we expose a [`.serp()`](#merlinfeedbackprototypeserpoptions) method. We can use this method once a page has loaded.
 
 
-### [`merlinFeedback(company, environment, instance, serpRegex)`](#merlinfeedbackcompany-environment-instance-serpregex)
+### [`merlinFeedback.init(company, environment, instance, serpRegex)`](#merlinfeedbackcompany-environment-instance-serpregex)
 
 Gives you a reference to a MerlinFeedback instance which you can use to make subsequent feedback API calls.
 
@@ -67,7 +67,7 @@ Gives you a reference to a MerlinFeedback instance which you can use to make sub
 
 #### Example
 ```js
-  var mf = merlinFeedback('blackbird', 'dev', 'my_instance', /search/);
+  var mf = merlinFeedback.init('blackbird', 'dev', 'my_instance', /search/);
 ```
 
 ## [`MerlinFeedback.prototype.serp(options)`](#merlinfeedbackprototypeserpoptions)
