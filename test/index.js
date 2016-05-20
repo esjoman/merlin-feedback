@@ -1,7 +1,7 @@
 /* global merlinFeedback, expect */
 
 function basicMf(href = 'href test', referrer = 'referrer test') {
-  return merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {href, referrer});
+  return window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {href, referrer});
 }
 
 function getFromStorage(key) {
@@ -70,14 +70,16 @@ describe('merlinFeedback instantiation', function () {
 });
 
 describe('mf', function () {
-  before(function () {
-    clearLocalStorage();
-  });
   const SERP_URL = 'search?q=dress';
   const ANOTHER_SERP_URL = 'search?q=tops';
-  let href = SERP_URL;
-  let mf = basicMf(href, null);
   const QID = 'my-qid';
+  let href = SERP_URL;
+  let mf;
+  
+  before(function () {
+    mf = basicMf(href, null);
+    clearLocalStorage();
+  });
   it('should, when given a qid, record it in localStorage', function (done) {
     mf.serp({qid: QID}).then(function () {
       let qidFromLocalStorage = localStorage.getItem(mf.href);
