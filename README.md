@@ -48,7 +48,7 @@ Using the feedback library with a [jQuery](https://jquery.com/) enabled site wou
 ## Overview
 merlin-feedback was primarily created for use on server-driven (not single page apps) to aid in quickly implementing the Merlin Feedback API. It is used in one of two scenarios:
 
-### Scenario #1: To collect feedback on a site that is **not** running Blackbird search
+### Scenario #1: To collect feedback on a site that *is not* running Blackbird search
 
 On websites that are currently powered by inhouse search, you must call the `.serp()` method with `docids`, `numfound`, and `q`, where `docids` is an array of all the IDs of documents returned for a given search (on that page), `numfound` is the total number of results returned, and `q` is the query for that search. It would look something like this:
 
@@ -62,7 +62,7 @@ mf.serp({
 
 This notifies our backend that the search for 'red dress' led to 25 results, with 5 of them showing up on the first page.
 
-### Scenario #2: To collect feedback on a site that **is** running Blackbird search
+### Scenario #2: To collect feedback on a site that *is* running Blackbird search
 
 In cases where you are already using our search, all you need to provide to the `.serp()` call is the `qid` returned in the response body of the search request, JSON that looks like this:
 
