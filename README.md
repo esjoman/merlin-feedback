@@ -46,7 +46,13 @@ Using the feedback library with a [jQuery](https://jquery.com/) enabled site wou
 ```
 
 ## Overview
-merlin-feedback was primarily created for use on server-driven (not single page apps) to aid in quickly implementing the Merlin Feedback API. It is used in one of two scenarios:
+merlin-feedback was primarily created for use on server-driven (not single page apps) to aid in quickly implementing the Merlin Feedback API. We first instantiate an instance of a feedback engine by calling `merlinFeedback.init(company, environment, instance, serpRegex)`.
+
+```js
+var mf = merlinFeedback('blackbird', 'dev', 'whiskey');
+```
+
+Once we have done this, merlin-feedback can be used in one of two scenarios:
 
 ### Scenario #1: To collect feedback on a site that *is not* running Blackbird search
 
@@ -88,6 +94,21 @@ All you would have to do is simply make the `.serp()` call with the returned `qi
 
 ```js
 mf.serp({qid: 'XqIgw7LDcJuowpcS'});
+```
+
+## Setting up event handlers: click, cartAdd, and purchase
+
+Once you've got the `.serp()` calls set up, the next thing to do is to wire up event listeners on any DOM elements to fire the appropriate events. merlin-feedback will know when to associate the event with a query if it is valid by determining whether the user came from a SERP. merlin-feedback uses `localStorage` to store this information. More on this in the API Reference below.
+
+## Conditional Builds
+
+merlin-feedback relies on [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) and the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) being present in the browser. To optimize for the lowest page-load times, we provide `mf.js` which will automatically detect whether they are present and load polyfills for any missing features as necessary. The catch is that the script is asynchronous, so you must wrap your code as shown below:
+
+```js
+merlinFeedback(function (){
+  var mf = merlinFeedback.init(...);
+  // etc...
+});
 ```
 
 ## API Reference
