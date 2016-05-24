@@ -66,7 +66,7 @@ This notifies our backend that the search for 'red dress' led to 25 results, wit
 
 In cases where you are already using our search, all you need to provide to the `.serp()` call is the `qid` returned in the response body of the search request, JSON that looks like this:
 
-```json
+```js
 {
   q: "dress",
   num: 5,
