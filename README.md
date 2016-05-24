@@ -113,7 +113,7 @@ merlinFeedback(function (){
 
 ## API Reference
 
-The API is the same as in merlin.js with some exceptions. Because we are not providing the search results, our engine needs a way of knowing which queries led to which results. For this, we expose a [`.serp()`](#merlinfeedbackprototypeserpoptions) method. We can use this method once a page has loaded.
+The API is the same as in merlin.js with some exceptions. Because we are not providing the search results, our engine needs a way of knowing which queries led to which results. For this, we expose an additional method, [`.serp()`](#merlinfeedbackprototypeserpoptions). We can use this method once a page has loaded.
 
 
 ### [`merlinFeedback.init(company, environment, instance, serpRegex)`](#merlinfeedbackcompany-environment-instance-serpregex)
