@@ -1,6 +1,8 @@
 # Standalone Feedback Library
 
-Alongside [merlin.js](https://github.com/blackbirdtech/merlin.js), we provide a smaller [merlin-feedback](https://github.com/blackbirdtech/merlin-feedback) for the browser with just the feedback features that you can use even when you are powering your own search. This feedback helps us get past the cold start problem. Using `mf.js` will load the script asynchronously so your pageload times are not impacted. Without the `fetch` and `Promise` polyfills, the library weighs in at an easy-to-digest 5.2K.
+The Feedback API allows you improve search relevance by communicating certain events of importance, such as how a certain search led to a purchase. To aid in implementing it we've developed a standalone library.
+
+Alongside [merlin.js](https://github.com/blackbirdtech/merlin.js), this [merlin-feedback](https://github.com/blackbirdtech/merlin-feedback) for the browser with just the feedback features that you can use even when you are powering your own search. This feedback helps us get past the cold start problem. Using `mf.js` will load the script asynchronously so your pageload times are not impacted. Without the `fetch` and `Promise` polyfills, the library weighs in at an easy-to-digest 5.2K.
 
 ## Quickstart
 
