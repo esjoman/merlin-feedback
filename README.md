@@ -45,6 +45,51 @@ Using the feedback library with a [jQuery](https://jquery.com/) enabled site wou
 </script>
 ```
 
+## Overview
+merlin-feedback was primarily created for use on server-driven (not single page apps) to aid in quickly implementing the Merlin Feedback API. It is used in one of two scenarios:
+
+### Scenario #1: To collect feedback on a site that is **not** running Blackbird search
+
+On websites that are currently powered by inhouse search, you must call the `.serp()` method with `docids`, `numfound`, and `q`, where `docids` is an array of all the IDs of documents returned for a given search (on that page), `numfound` is the total number of results returned, and `q` is the query for that search. It would look something like this:
+
+```js
+mf.serp({
+  q: 'red dress',
+  docids: [93854, 45930, 49598, 29384, 89222],
+  numfound: 25
+});
+```
+
+This notifies our backend that the search for 'red dress' led to 25 results, with 5 of them showing up on the first page.
+
+### Scenario #2: To collect feedback on a site that **is** running Blackbird search
+
+In cases where you are already using our search, all you need to provide to the `.serp()` call is the `qid` returned in the response body of the search request, JSON that looks like this:
+
+```json
+{
+  q: "dress",
+  num: 5,
+  start: 0,
+  results: {
+    numfound: 25,
+    hits: [],
+    facets: {
+      enums: { },
+      histograms: { },
+      ranges: { }
+    }
+  },
+  qid: "XqIgw7LDcJuowpcS"
+}
+```
+
+All you would have to do is simply make the `.serp()` call with the returned `qid`, or in this case, `"XqIgw7LDcJuowpcS"`:
+
+```js
+mf.serp({qid: 'XqIgw7LDcJuowpcS'});
+```
+
 ## API Reference
 
 The API is the same as in merlin.js with some exceptions. Because we are not providing the search results, our engine needs a way of knowing which queries led to which results. For this, we expose a [`.serp()`](#merlinfeedbackprototypeserpoptions) method. We can use this method once a page has loaded.
