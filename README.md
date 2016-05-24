@@ -1,6 +1,6 @@
 # Standalone Feedback Library
 
-The Feedback API allows you improve search relevance by communicating certain events of importance, such as how a certain search led to a purchase. To aid in implementing it we've developed a standalone library.
+The Feedback API allows you improve search relevance by communicating certain events of importance, such as how a certain search led to a purchase. To aid in implementing it we've developed a standalone library. To use the library, all you have to do is drop in a script tag, and with some minimal configuration you should be all set to send feedback events.
 
 Alongside [merlin.js](https://github.com/blackbirdtech/merlin.js), this [merlin-feedback](https://github.com/blackbirdtech/merlin-feedback) for the browser with just the feedback features that you can use even when you are powering your own search. This feedback helps us get past the cold start problem. Using `mf.js` will load the script asynchronously so your pageload times are not impacted. Without the `fetch` and `Promise` polyfills, the library weighs in at an easy-to-digest 5.2K.
 
