@@ -51,7 +51,7 @@ Using the feedback library with a [jQuery](https://jquery.com/) enabled site wou
 merlin-feedback was primarily created for use on server-driven (not single page apps) to aid in quickly implementing the Merlin Feedback API. We first instantiate an instance of a feedback engine by calling `merlinFeedback.init(company, environment, instance, serpRegex)`.
 
 ```js
-var mf = merlinFeedback('blackbird', 'dev', 'whiskey');
+var mf = merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/);
 ```
 
 Once we have done this, merlin-feedback can be used in one of two scenarios:
