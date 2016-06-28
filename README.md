@@ -9,8 +9,8 @@ Alongside [merlin.js](https://github.com/blackbirdtech/merlin.js), this [merlin-
 Using the feedback library with a [jQuery](https://jquery.com/) enabled site would be as easy as having this code block on every page:
 
 ```html
-<script src="https://cdn.rawgit.com/blackbirdtech/merlin-feedback/e967659e85d8863103810063526bfa7836e18793/dist/mf.js"></script>
-<script>
+<script defer src="https://cdn.rawgit.com/blackbirdtech/merlin-feedback/c10e6fc389d33aa9df6e9eed9044f99618333e15/dist/mf.js"></script>
+<script defer>
   var $NUMFOUND = $('#product-count');
   var $PRODUCTS = $('.grid-item');
   var $ADD_TO_CART = $('#add-to-cart');
@@ -52,6 +52,24 @@ merlin-feedback was primarily created for use on server-driven (not single page 
 
 ```js
 var mf = merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/);
+```
+
+### For use in single-page apps
+
+To use merlin-feedback in a single-page app, namely one that uses history.pushState, instantiate the engine with `{useUrlChangeTracker: true}`. Note that you only need to do this for single-page apps.
+
+```js
+var mf = merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {
+  useUrlChangeTracker: true
+});
+```
+
+This will wrap history.pushState (in-place) so that anytime it is called, the feedback engine will know to update its internal state when URL changes take place.
+
+Alternatively, you can manually call `mf.handleUrlChanged(href)` anytime the URL changes to accomplish the same thing.
+
+```js
+mf.handleUrlChanged('http://blackbird.am/new-url');
 ```
 
 Once we have done this, merlin-feedback can be used in one of two scenarios:
