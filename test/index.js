@@ -1,7 +1,10 @@
 /* global merlinFeedback, expect */
 
 function basicMf(href = 'href test', referrer = 'referrer test') {
-  return window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {href, referrer});
+  const mf = window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/);
+  mf.handleUrlChanged(referrer);
+  mf.handleUrlChanged(href);
+  return mf;
 }
 
 function getFromStorage(key) {
@@ -62,10 +65,10 @@ describe('merlinFeedback instantiation', function () {
     expect(mf.cartAdd).to.be.a('function');
     expect(mf.purchase).to.be.a('function');
   });
-  it('should allow setting href and referrer manually', function () {
+  it('should allow setting currentHref and previousHref manually', function () {
     let mf = basicMf();
-    expect(mf.href).to.be('href test');
-    expect(mf.referrer).to.be('referrer test');
+    expect(mf.currentHref).to.be('href test');
+    expect(mf.previousHref).to.be('referrer test');
   });
 });
 
@@ -73,16 +76,16 @@ describe('mf', function () {
   const SERP_URL = 'search?q=dress';
   const ANOTHER_SERP_URL = 'search?q=tops';
   const QID = 'my-qid';
-  let href = SERP_URL;
+  let currentHref = SERP_URL;
   let mf;
   
   before(function () {
-    mf = basicMf(href, null);
+    mf = basicMf(currentHref, null);
     clearLocalStorage();
   });
   it('should, when given a qid, record it in localStorage', function (done) {
     mf.serp({qid: QID}).then(function () {
-      let qidFromLocalStorage = localStorage.getItem(mf.href);
+      let qidFromLocalStorage = localStorage.getItem(mf.currentHref);
       expect(qidFromLocalStorage).to.be(QID);
       done();
     });
@@ -106,8 +109,8 @@ describe('mf', function () {
   });
   // navigate to a pdp
   it('mf.cartAdd should grab qid from localStorage by default', function (done) {
-    mf.referrer = 'search?q=dress';
-    mf.href = 'pdp?id=34895';
+    mf.previousHref = 'search?q=dress';
+    mf.currentHref = 'pdp?id=34895';
     Promise.all([
       mf.cartAdd({docids: [34895]}),
       mf.cartAdd({docids: [34899]})
@@ -117,20 +120,52 @@ describe('mf', function () {
     });
   });
   it('mf.cartAdd should handle multiple qids', function () {
-    mf.href = ANOTHER_SERP_URL;
+    mf.currentHref = ANOTHER_SERP_URL;
     mf.serp();
     mf.click({docids: [28900]});
-    mf.referrer = ANOTHER_SERP_URL;
-    mf.href = 'pdp?id=28900';
+    mf.previousHref = ANOTHER_SERP_URL;
+    mf.currentHref = 'pdp?id=28900';
     mf.cartAdd({docids: [28900]});
     expect(getFromStorage('bbcart').split('###').length).to.be(2);
   });
   it('mf.purchase should grab cart from localStorage by default', function (done) {
-    mf.referrer = 'pdp?id=34895';
-    mf.href = 'checkout';
+    mf.previousHref = 'pdp?id=34895';
+    mf.currentHref = 'checkout';
     mf.purchase().then(function (responses) {
       expect(responses.length).to.be(2);
       done();
     });
+  });
+
+});
+
+describe('useUrlChangeTracker', function () {
+  let location, mf;
+  before(function () {
+    location = window.location.href;
+    mf = window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {useUrlChangeTracker: true});
+  });
+  it('should keep track of URL when pushState is being used', function () {
+    // we have this setTimeout stuff because history.pushState calls update asynchronously
+    history.pushState({}, '', 'something');
+    setTimeout(() => {
+      expect(mf.currentHref).to.match(/something/);
+      history.pushState({}, '', 'else');
+      setTimeout(() => {
+        history.pushState({}, '', 'else');
+        setTimeout(() => {
+          expect(mf.currentHref).to.match(/else/);
+          expect(mf.previousHref).to.match(/something/);
+          history.pushState({}, '', 'else'); // should not update hrefs
+          setTimeout(() => {
+            expect(mf.currentHref).to.match(/else/);
+            expect(mf.previousHref).to.match(/something/);
+          }, 0);
+        }, 0);
+      }, 0);
+    }, 0);
+  });
+  after(function () {
+    history.pushState({}, '', location);
   });
 });
