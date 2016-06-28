@@ -35,7 +35,10 @@ export default class Cart {
   }
 
   get(): CartObj {
-    const cartString: string = this.storage.getItem(this.key) || '###';
+    // builds the CartObj representation of the string stored in storage
+    const cartString: ?string = this.storage.getItem(this.key);
+    if (!cartString) return {}; // return "empty cart" if nothing is there
+
     const qidDocidsAsStringPairs: Array<string> = cartString.split('###');
     return qidDocidsAsStringPairs.reduce((acc: CartObj, qidDocidsAsStringPair: string) => {
       let [qid, docidsAsString]: [string, string] = qidDocidsAsStringPair.split(':');
@@ -47,6 +50,7 @@ export default class Cart {
   }
 
   set(cartObj: CartObj) {
+    // converts the CartObj into a string and stores it in storage
     const qids: Array<string> = Object.keys(cartObj);
     const qidDocIdPairs: Array<string> = qids.map((qid: Id) => `${qid}:${cartObj[qid].join(',')}`);
     const cartString: string = qidDocIdPairs.join('###');

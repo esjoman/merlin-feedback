@@ -1,6 +1,7 @@
 // @flow
 
 import Cart from './Cart.js';
+import UrlChangeTracker from './UrlChangeTracker.js';
 
 type Id = string | number;
 
@@ -23,6 +24,8 @@ type CartObj = {
   [key: Id]: Array<Id>;
 };
 
+type HandleUrlChanged = (currentHref: ?string) => void;
+
 const POSSIBLE_PARAMS: Array<string> = ['qid', 'q', 'numfound', 'docids', 'uid', 'sid', 'num', 'start'];
 
 export default class MerlinFeedback {
@@ -32,14 +35,20 @@ export default class MerlinFeedback {
   cart: Cart;
   previousHref: string;
   currentHref: string;
+  handleUrlChanged: HandleUrlChanged;
+  urlChangeTracker: ?UrlChangeTracker;
 
-  constructor(url: string, serpRegex: SerpRegex, storage: Storage, storageKey: string) {
+  constructor(url: string, serpRegex: SerpRegex, storage: Storage, storageKey: string, useUrlChangeTracker: boolean) {
     this.url = url;
     this.serpRegex = serpRegex;
     this.storage = storage;
     this.cart = new Cart(storage, storageKey);
     this.previousHref = window.location.referrer;
     this.currentHref = window.location.href;
+    if (useUrlChangeTracker) {
+      this.handleUrlChanged = this.handleUrlChanged.bind(this);
+      this.urlChangeTracker = new UrlChangeTracker(this.handleUrlChanged);
+    }
   }
 
   serp(options: FeedbackParams = {}): ?Promise<Response> {
@@ -82,9 +91,10 @@ export default class MerlinFeedback {
     return Promise.all(purchaseEvents);
   }
 
-  handleUrlChanged(currentHref: string = window.location.href) {
+  handleUrlChanged(href: string = window.location.href) {
+    if (href === this.currentHref) return; // no-op if the url is the same as the current one
     this.previousHref = this.currentHref;
-    this.currentHref = currentHref;
+    this.currentHref = href;
   }
 
   _registerEvent(event: Event, options: FeedbackParams): Promise<Response> {
