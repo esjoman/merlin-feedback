@@ -24,16 +24,12 @@
   "homepage": "https://github.com/blackbirdtech/merlin-feedback#readme",
   "devDependencies": {
     "flow-bin": "^0.27.0",
-    "jspm": "^0.17.0-beta.14"
+    "jspm": "^0.17.0-beta.22"
   },
   "jspm": {
     "name": "merlin-feedback",
     "main": "merlin-feedback.js",
-    "directories": {
-      "lib": "src"
-    },
     "dependencies": {
-      "core-js": "npm:core-js@^2.4.0",
       "es6-promise": "npm:es6-promise@^3.2.1",
       "fetch": "github:github/fetch@^1.0.0"
     },
@@ -42,49 +38,12 @@
       "babel-plugin-transform-class-properties": "npm:babel-plugin-transform-class-properties@^6.10.2",
       "babel-plugin-transform-export-extensions": "npm:babel-plugin-transform-export-extensions@^6.8.0",
       "babel-plugin-transform-flow-strip-types": "npm:babel-plugin-transform-flow-strip-types@^6.8.0",
-      "babel-preset-stage-2": "npm:babel-preset-stage-2@^6.11.0",
-      "buffer": "github:jspm/nodelibs-buffer@^0.2.0-alpha",
-      "events": "github:jspm/nodelibs-events@^0.2.0-alpha",
       "fs": "github:jspm/nodelibs-fs@^0.2.0-alpha",
-      "net": "github:jspm/nodelibs-net@^0.2.0-alpha",
       "path": "github:jspm/nodelibs-path@^0.2.0-alpha",
-      "plugin-babel": "npm:systemjs-plugin-babel@^0.0.10",
-      "process": "github:jspm/nodelibs-process@^0.2.0-alpha",
-      "stream": "github:jspm/nodelibs-stream@^0.2.0-alpha",
-      "tty": "github:jspm/nodelibs-tty@^0.2.0-alpha",
-      "util": "github:jspm/nodelibs-util@^0.2.0-alpha"
+      "plugin-babel": "npm:systemjs-plugin-babel@^0.0.12"
     },
-    "peerDependencies": {},
-    "overrides": {
-      "npm:debug@2.2.0": {
-        "main": "browser.js",
-        "jspmNodeConversion": false,
-        "format": "cjs",
-        "map": {
-          "./browser.js": {
-            "node": "./node.js"
-          },
-          "fs": "@node/fs",
-          "net": "@node/net",
-          "tty": "@node/tty",
-          "util": "@node/util"
-        }
-      },
-      "npm:inherits@2.0.1": {
-        "ignore": [
-          "test.js"
-        ]
-      },
-      "npm:lodash@4.13.1": {
-        "map": {
-          "buffer": "@empty",
-          "process": "@empty"
-        }
-      },
-      "npm:ms@0.7.1": {
-        "jspmNodeConversion": false,
-        "format": "cjs"
-      }
+    "peerDependencies": {
+      "process": "github:jspm/nodelibs-process@^0.2.0-alpha"
     }
   }
 }
