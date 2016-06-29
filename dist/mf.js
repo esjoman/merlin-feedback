@@ -1,2 +1,38 @@
-!function(a,b){"object"==typeof exports&&"undefined"!=typeof module?b(exports):"function"==typeof define&&define.amd?define(["exports"],b):b(a.merlinFeedback=a.merlinFeedback||{})}(this,function(a){"use strict";function b(a,b){return b?"dist/"+a+".js":"https://cdn.rawgit.com/blackbirdtech/merlin-feedback/"+e+"/dist/"+a+".js"}function c(a,b){var c=document.createElement("script");return c.readyState?void(c.onreadystatechange=function(){"loaded"!=c.readyState&&"complete"!=c.readyState||(c.onreadystatechange=null,b(window.merlinFeedback))}):(c.onload=function(){b(window.merlinFeedback)},c.src=a,void document.getElementsByTagName("body")[0].appendChild(c))}function d(a){window.Promise&&window.fetch?c(b("base"),a):window.Promise?c(b("fetch"),a):window.fetch?c(b("promise"),a):c(b("promise-fetch"),a)}var e="c10e6fc389d33aa9df6e9eed9044f99618333e15";a["default"]=d,Object.defineProperty(a,"__esModule",{value:!0})});
-//# sourceMappingURL=mf.js.map
+(function () { 'use strict';
+  var COMMIT = 'c10e6fc389d33aa9df6e9eed9044f99618333e15';
+
+  function cdn(flavor, local) {
+    return local ? 'dist/' + flavor + '.js' : 'https://cdn.rawgit.com/blackbirdtech/merlin-feedback/' + COMMIT + '/dist/' + flavor + '.js';
+  }
+
+  function load(url, callback) {
+    var script = document.createElement('script');
+    if (script.readyState) {
+      //IE
+      script.onreadystatechange = function () {
+        if (script.readyState == 'loaded' || script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback(window.merlinFeedback);
+        }
+      };
+      return;
+    }
+    script.onload = function () {
+      callback(window.merlinFeedback);
+    };
+    script.src = url;
+    document.getElementsByTagName('body')[0].appendChild(script);
+  }
+
+  window.merlinFeedback = function merlinFeedback(callback) {
+    if (window.Promise && window.fetch) {
+      load(cdn('base'), callback);
+    } else if (window.Promise) {
+      load(cdn('fetch'), callback);
+    } else if (window.fetch) {
+      load(cdn('promise'), callback);
+    } else {
+      load(cdn('promise-fetch'), callback);
+    }
+  };
+})();
