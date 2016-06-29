@@ -145,7 +145,7 @@ describe('useUrlChangeTracker', function () {
     location = window.location.href;
     mf = window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {useUrlChangeTracker: true});
   });
-  it('should keep track of URL when pushState is being used', function () {
+  it('should keep track of URL when pushState is being used', function (done) {
     // we have this setTimeout stuff because history.pushState calls update asynchronously
     history.pushState({}, '', 'something');
     setTimeout(() => {
@@ -160,6 +160,7 @@ describe('useUrlChangeTracker', function () {
           setTimeout(() => {
             expect(mf.currentHref).to.match(/else/);
             expect(mf.previousHref).to.match(/something/);
+            done();
           }, 0);
         }, 0);
       }, 0);
