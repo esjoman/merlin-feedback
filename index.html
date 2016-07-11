@@ -7,7 +7,7 @@
 <body>
   <div id="mocha"></div>
 
-  <!-- <script src="dist/mf.js"></script> -->
+  <script src="dist/base.js"></script>
 
   <script src="jspm_packages/system.js"></script>
   <script src="jspm.config.js"></script>
@@ -18,12 +18,9 @@
   <script>mocha.setup('bdd')</script>
   <script src="test/index.js"></script>
   <script>
-    System.import('merlin-feedback').then(m => {
-      window.merlinFeedback = m;
-      mocha.checkLeaks();
-      mocha.globals(['jQuery']);
-      mocha.run();
-    });
+    mocha.checkLeaks();
+    mocha.globals(['jQuery']);
+    mocha.run();
   </script>
 </body>
 </html>
