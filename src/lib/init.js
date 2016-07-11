@@ -4,8 +4,11 @@ import MerlinFeedback from './MerlinFeedback.js';
 
 type SerpRegex = RegExp | (url: string) => boolean;
 
+type FallbackOptions = {mode: string; url?: string};
+
 type MerlinFeedbackOptions = {
   useUrlChangeTracker: boolean;
+  fallback?: FallbackOptions
 };
 
 const ERROR_MSG: string = `merlinFeedback takes 4 required arguments: company, environment, instance, serpRegex.
@@ -26,8 +29,13 @@ export default function init(
   if (!company || !env || !instance) throw new Error(ERROR_MSG);
   if (!(serpRegex instanceof RegExp || typeof serpRegex === 'function')) throw new Error(SERP_ERROR_MSG);
 
-  const {useUrlChangeTracker} = options;
+  const {useUrlChangeTracker, fallback} = options;
+  let url = `https://search-${env}.search.blackbird.am/v1/${company}.${env}.${instance}/products/feedback`;
 
-  const url = `https://search-${env}.search.blackbird.am/v1/${company}.${env}.${instance}/products/feedback`;
+  if (fallback && fallback.mode === 'proxy' && fallback.url) {
+    const fallbackUrl = fallback.url;
+    url = `${fallbackUrl.endsWith('/') ? fallbackUrl.slice(0, -1) : fallbackUrl}/${url}`;
+  }
+
   return new MerlinFeedback(url, serpRegex, window.localStorage, BB_CART, useUrlChangeTracker);
 }
