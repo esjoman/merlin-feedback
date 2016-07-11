@@ -1,4 +1,10 @@
-# Changelog
+# Changelog 
+
+## 2.1.0
+* Added a `fallback` option to `MerlinFeedbackOptions`, which works the same as the [`fallback` option in merlin.js](https://github.com/blackbirdtech/merlin.js#fallback).
+
+### Dev changes
+* Added `build`, `test`, and `bump` scripts for ease of developing.
 
 ## 2.0.1
 
