@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "ls src/wrappers | xargs -P5 -I {} jspm build merlin-feedback/wrappers/{} dist/{} --global-name merlinFeedback -m",
+    "bump": "npm-scripts/bump.js",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "serve": "echo 'open your browser to localhost:3001 to see tests\n' && serve -p 3001",
     "test": "npm run flow && npm run serve"
