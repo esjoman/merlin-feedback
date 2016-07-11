@@ -148,7 +148,7 @@ describe('useUrlChangeTracker', function () {
   it('should keep track of URL when pushState is being used', function (done) {
     // we have this setTimeout stuff because history.pushState calls update asynchronously
     history.pushState({}, '', 'something');
-    setTimeout(() => {
+    setTimeout(() => { 
       expect(mf.currentHref).to.match(/something/);
       history.pushState({}, '', 'else');
       setTimeout(() => {
@@ -168,5 +168,26 @@ describe('useUrlChangeTracker', function () {
   });
   after(function () {
     history.pushState({}, '', location);
+  });
+});
+
+describe('fallback', function () {
+  let mf;
+  before(function () {
+    mf = window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {
+      fallback: {
+        mode: 'proxy',
+        url: 'http://test-url.com/proxy'
+      },
+      useUrlChangeTracker: true
+    });
+  });
+  it('should throw when not given a `fallback.url`', function () {
+    expect(function () {
+      window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {fallback: {mode: 'proxy'}});
+    }).to.throwError();
+  });
+  it('should prepend fallback url to the request url', function () {
+    expect(mf.url).to.be('http://test-url.com/proxy/https://search-dev.search.blackbird.am/v1/blackbird.dev.whiskey/products/feedback');
   });
 });
