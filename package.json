@@ -4,8 +4,10 @@
   "description": "JavaScript bindings for Blackbird's Merlin Feedback API",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "flow": "flow; test $? -eq 0 -o $? -eq 2"
+    "build": "ls src/wrappers | xargs -P5 -I {} jspm build merlin-feedback/wrappers/{} dist/{} --global-name merlinFeedback -m",
+    "flow": "flow; test $? -eq 0 -o $? -eq 2",
+    "serve": "echo 'open your browser to localhost:3001 to see tests\n' && serve -p 3001",
+    "test": "npm run flow && npm run serve"
   },
   "repository": {
     "type": "git",
@@ -24,7 +26,8 @@
   "homepage": "https://github.com/blackbirdtech/merlin-feedback#readme",
   "devDependencies": {
     "flow-bin": "^0.27.0",
-    "jspm": "^0.17.0-beta.22"
+    "jspm": "^0.17.0-beta.22",
+    "serve": "^1.4.0"
   },
   "jspm": {
     "name": "merlin-feedback",
