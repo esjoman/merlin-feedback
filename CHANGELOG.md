@@ -1,5 +1,8 @@
 # Changelog 
 
+## 2.1.2
+* Removed unnecessary code in `MerlinFeedback#_fetchWithFallback`.
+
 ## 2.1.1
 * Fallback now only goes into effect once a request has failed due to a networking error such as CORS being disabled.
 
