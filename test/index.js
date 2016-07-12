@@ -187,7 +187,7 @@ describe('fallback', function () {
       window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {fallback: {mode: 'proxy'}});
     }).to.throwError();
   });
-  it('should prepend fallback url to the request url', function () {
-    expect(mf.url).to.be('http://test-url.com/proxy/https://search-dev.search.blackbird.am/v1/blackbird.dev.whiskey/products/feedback');
+  xit('should prepend fallback url to the request url when making requests', function () {
+    // this needs a programmatic test
   });
 });
