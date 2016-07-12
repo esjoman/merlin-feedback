@@ -26,6 +26,11 @@ type CartObj = {
 
 type HandleUrlChanged = (currentHref: ?string) => void;
 
+type FallbackOptions = {
+  mode: string;
+  url: string;
+};
+
 const POSSIBLE_PARAMS: Array<string> = ['qid', 'q', 'numfound', 'docids', 'uid', 'sid', 'num', 'start'];
 
 export default class MerlinFeedback {
@@ -37,8 +42,10 @@ export default class MerlinFeedback {
   currentHref: string;
   handleUrlChanged: HandleUrlChanged;
   urlChangeTracker: ?UrlChangeTracker;
+  fallback: ?FallbackOptions;
+  useFallback: ?boolean;
 
-  constructor(url: string, serpRegex: SerpRegex, storage: Storage, storageKey: string, useUrlChangeTracker: boolean) {
+  constructor(url: string, serpRegex: SerpRegex, storage: Storage, storageKey: string, useUrlChangeTracker: boolean, fallback: ?FallbackOptions) {
     this.url = url;
     this.serpRegex = serpRegex;
     this.storage = storage;
@@ -48,6 +55,10 @@ export default class MerlinFeedback {
     if (useUrlChangeTracker) {
       this.handleUrlChanged = this.handleUrlChanged.bind(this);
       this.urlChangeTracker = new UrlChangeTracker(this.handleUrlChanged);
+    }
+    if (fallback) {
+      this.fallback = fallback;
+      this.useFallback = false;
     }
   }
 
@@ -99,7 +110,31 @@ export default class MerlinFeedback {
 
   _registerEvent(event: Event, options: FeedbackParams): Promise<Response> {
     const url: string = addToUrl(`${this.url}/${event}`, options, POSSIBLE_PARAMS);
-    return fetch(url);
+    return this._fetchWithFallback(url);
+  }
+
+  // based on merlin.js's merlinRequest, but slightly different because here:
+  // 404s, 500s, etc. are successful requests
+  _fetchWithFallback(url: string): Promise<Response> {
+    // simply fetch if no fallback is specified
+    if (!this.fallback) return fetch(url);
+
+    // if we're already in fallback mode, skip straight to that
+    if (this.useFallback && this.fallback.mode === 'proxy') {
+      const fallbackUrl = this.fallback.url;
+      const fallbackUrlWithoutTrailingSlash = fallbackUrl.slice(-1) === '/' ? fallbackUrl.slice(0, -1) : fallbackUrl;
+      return fetch(`${fallbackUrlWithoutTrailingSlash}/${url}`);
+    }
+
+    // otherwise try a fetch, falling into fallback mode as necessary
+    return fetch(url).catch((err) => {
+      // if there is no fallback,
+      // return a rejected promise with the error
+      if (!this.fallback) return Promise.reject(err);
+
+      this.useFallback = true;
+      return this._fetchWithFallback(url);
+    });
   }
 }
 
