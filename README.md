@@ -140,7 +140,7 @@ merlinFeedback(function (){
 The API is the same as in merlin.js with some exceptions. Because we are not providing the search results, our engine needs a way of knowing which queries led to which results. For this, we expose an additional method, [`.serp()`](#merlinfeedbackprototypeserpoptions). We can use this method once a page has loaded.
 
 
-### [`merlinFeedback.init(company, environment, instance, serpRegex)`](#merlinfeedbackcompany-environment-instance-serpregex)
+### [`merlinFeedback.init(company, environment, instance, serpRegex, [options])`](#merlinfeedbackcompany-environment-instance-serpregex)
 
 Gives you a reference to a MerlinFeedback instance which you can use to make subsequent feedback API calls.
 
@@ -151,6 +151,11 @@ Gives you a reference to a MerlinFeedback instance which you can use to make sub
 2. `environment` *(string)*: The level of the instance: 'dev', 'staging', or 'prod'.
 3. `instance` *(string)*: The name of the instance.
 4. `serpRegex` *(RegExp | Function)*: A regular expression or function that the current URL can be tested truthy for on SERPs.
+5. [`options`] *(Object)*: Optional object that currently has 2 optional parameters: `useUrlChangeTracker` and `fallback`.
+  * [`useUrlChangeTracker`] *(boolean)*: Whether to use the automatic url change tracker (for single-page apps) (optional).
+  * [`fallback`] *(Object)*: *(Object)*: An object with fallback `mode` and `url`. See [merlin.js Fallback](https://github.com/blackbirdtech/merlin.js#fallback).
+    - `mode` *(string)*: Currently the only available mode is `'proxy'`, which additionally requires a `fallback.url` parameter to proxy to.
+    - `url` *(string)*: Fallback requests will be made to a proxy server by appending the entire request URL to the proxy url.
 
 #### Returns
 *(MerlinFeedback)*: An object with [`.serp()`](#merlinfeedbackprototypeserpoptions), [`.click()`](#merlinfeedbackprototypeclickoptions), [`.cartAdd()`](#merlinfeedbackprototypecartaddoptions), and [`.purchase()`](#merlinfeedbackprototypepurchaseoptions) methods.
