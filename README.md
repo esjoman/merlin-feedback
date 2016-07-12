@@ -9,7 +9,7 @@ Alongside [merlin.js](https://github.com/blackbirdtech/merlin.js), this [merlin-
 Using the feedback library with a [jQuery](https://jquery.com/) enabled site would be as easy as having this code block on every page:
 
 ```html
-<script defer src="https://cdn.rawgit.com/blackbirdtech/merlin-feedback/6f1cfa3e41de3b37a0a813616474ca728ff14942/dist/mf.js"></script>
+<script defer src="https://cdn.rawgit.com/blackbirdtech/merlin-feedback/55fd43936a64c2b085e93b71dd7480730729ac14/dist/mf.js"></script>
 <script defer>
   var $NUMFOUND = $('#product-count');
   var $PRODUCTS = $('.grid-item');
