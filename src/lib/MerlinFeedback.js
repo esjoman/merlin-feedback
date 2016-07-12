@@ -127,11 +127,7 @@ export default class MerlinFeedback {
     }
 
     // otherwise try a fetch, falling into fallback mode as necessary
-    return fetch(url).catch((err) => {
-      // if there is no fallback,
-      // return a rejected promise with the error
-      if (!this.fallback) return Promise.reject(err);
-
+    return fetch(url).catch(() => {
       this.useFallback = true;
       return this._fetchWithFallback(url);
     });
