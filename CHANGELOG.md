@@ -1,5 +1,8 @@
 # Changelog 
 
+## 2.1.1
+* Fallback now only goes into effect once a request has failed due to a networking error such as CORS being disabled.
+
 ## 2.1.0
 * Added a `fallback` option to `MerlinFeedbackOptions`, which works the same as the [`fallback` option in merlin.js](https://github.com/blackbirdtech/merlin.js#fallback).
 
