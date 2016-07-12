@@ -1,4 +1,4 @@
-const COMMIT = '5fdfa73184af8cdb97c5f1704ec1586e81951b3e';
+const COMMIT = 'c56c7e8630e109a4032b0bc398080211cfbe5793';
 
 function cdn(flavor, local) {
   return local ? `dist/${flavor}.js` : `https://cdn.rawgit.com/blackbirdtech/merlin-feedback/${COMMIT}/dist/${flavor}.js`;
