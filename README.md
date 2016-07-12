@@ -153,7 +153,7 @@ Gives you a reference to a MerlinFeedback instance which you can use to make sub
 4. `serpRegex` *(RegExp | Function)*: A regular expression or function that the current URL can be tested truthy for on SERPs.
 5. [`options`] *(Object)*: Optional object that currently has 2 optional parameters: `useUrlChangeTracker` and `fallback`.
   * [`useUrlChangeTracker`] *(boolean)*: Whether to use the automatic url change tracker (for single-page apps) (optional).
-  * [`fallback`] *(Object)*: *(Object)*: An object with fallback `mode` and `url`. See [merlin.js Fallback](https://github.com/blackbirdtech/merlin.js#fallback).
+  * [`fallback`] *(Object)*: An object with fallback `mode` and `url`. See [merlin.js Fallback](https://github.com/blackbirdtech/merlin.js#fallback).
     - `mode` *(string)*: Currently the only available mode is `'proxy'`, which additionally requires a `fallback.url` parameter to proxy to.
     - `url` *(string)*: Fallback requests will be made to a proxy server by appending the entire request URL to the proxy url.
 
