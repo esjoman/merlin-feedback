@@ -1,2 +1,2 @@
 import 'es6-promise';
-export {init, Cart, MerlinFeedback} from '../lib/index.js';
+export {init, Cart, SafeStorage, MerlinFeedback} from '../lib/index.js';

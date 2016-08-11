@@ -1,42 +1,31 @@
 /* global merlinFeedback, expect */
 
-function basicMf(href = 'href test', referrer = 'referrer test') {
-  const mf = window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/);
+function basicMf(href, referrer) {
+  href = href || 'href test';
+  referrer = referrer || 'referrer test';
+  var mf = window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/);
   mf.handleUrlChanged(referrer);
   mf.handleUrlChanged(href);
   return mf;
 }
 
-function getFromStorage(key) {
-  return window.localStorage.getItem(key);
-}
-
-function clearLocalStorage() {
-  window.localStorage.clear();
-}
-
 
 describe('basic checks', function () {
-  before(function () {
-    clearLocalStorage();
-  });
   it('merlinFeedback should exist on the global object', function () {
     expect(merlinFeedback).to.be.ok();
   });
-  it('merlinFeedback should have properties `init`, `Cart`, and `MerlinFeedback`', function () {
+  it('merlinFeedback should have properties `init`, `Cart`, `SafeStorage`, and `MerlinFeedback`', function () {
     expect(merlinFeedback.init).to.be.ok();
     expect(merlinFeedback.Cart).to.be.ok();
+    expect(merlinFeedback.SafeStorage).to.be.ok();
     expect(merlinFeedback.MerlinFeedback).to.be.ok();
-  });
-  after(function () {
-    clearLocalStorage();
   });
 });
 
 describe('Cart', function () {
-  let mfCart;
+  var mfCart;
   it('should allow instantiation', function () {
-    mfCart = new merlinFeedback.Cart(window.localStorage);
+    mfCart = new merlinFeedback.Cart(new merlinFeedback.SafeStorage(window.localStorage), '__test__');
     expect(mfCart).to.be.ok();
   });
   it('should allow adding via qid/docids', function () {
@@ -58,7 +47,7 @@ describe('Cart', function () {
 
 describe('merlinFeedback instantiation', function () {
   it('should instantiate an object with the `serp`, `click`, `cartAdd`, and `purchase` methods', function () {
-    let mf = basicMf();
+    var mf = basicMf();
     expect(mf).to.be.ok();
     expect(mf.serp).to.be.a('function');
     expect(mf.click).to.be.a('function');
@@ -66,26 +55,26 @@ describe('merlinFeedback instantiation', function () {
     expect(mf.purchase).to.be.a('function');
   });
   it('should allow setting currentHref and previousHref manually', function () {
-    let mf = basicMf();
+    var mf = basicMf();
     expect(mf.currentHref).to.be('href test');
     expect(mf.previousHref).to.be('referrer test');
   });
 });
 
 describe('mf', function () {
-  const SERP_URL = 'search?q=dress';
-  const ANOTHER_SERP_URL = 'search?q=tops';
-  const QID = 'my-qid';
-  let currentHref = SERP_URL;
-  let mf;
+  var SERP_URL = 'search?q=dress';
+  var ANOTHER_SERP_URL = 'search?q=tops';
+  var QID = 'my-qid';
+  var currentHref = SERP_URL;
+  var mf;
   
   before(function () {
     mf = basicMf(currentHref, null);
-    clearLocalStorage();
+    mf.storage.clear();
   });
   it('should, when given a qid, record it in localStorage', function (done) {
     mf.serp({qid: QID}).then(function () {
-      let qidFromLocalStorage = localStorage.getItem(mf.currentHref);
+      var qidFromLocalStorage = mf.storage.getItem(mf.currentHref);
       expect(qidFromLocalStorage).to.be(QID);
       done();
     });
@@ -115,7 +104,9 @@ describe('mf', function () {
       mf.cartAdd({docids: [34895]}),
       mf.cartAdd({docids: [34899]})
     ]).then(function (responses) {
-        responses.forEach(res => expect(res.status).to.be(200));
+        responses.forEach(function (res) {
+          expect(res.status).to.be(200);
+        });
         done();
     });
   });
@@ -126,7 +117,7 @@ describe('mf', function () {
     mf.previousHref = ANOTHER_SERP_URL;
     mf.currentHref = 'pdp?id=28900';
     mf.cartAdd({docids: [28900]});
-    expect(getFromStorage('bbcart').split('###').length).to.be(2);
+    expect(mf.storage.getItem('bbcart').split('###').length).to.be(2);
   });
   it('mf.purchase should grab cart from localStorage by default', function (done) {
     mf.previousHref = 'pdp?id=34895';
@@ -140,7 +131,7 @@ describe('mf', function () {
 });
 
 describe('useUrlChangeTracker', function () {
-  let location, mf;
+  var location, mf;
   before(function () {
     location = window.location.href;
     mf = window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {useUrlChangeTracker: true});
@@ -148,16 +139,16 @@ describe('useUrlChangeTracker', function () {
   it('should keep track of URL when pushState is being used', function (done) {
     // we have this setTimeout stuff because history.pushState calls update asynchronously
     history.pushState({}, '', 'something');
-    setTimeout(() => { 
+    setTimeout(function () { 
       expect(mf.currentHref).to.match(/something/);
       history.pushState({}, '', 'else');
-      setTimeout(() => {
+      setTimeout(function () {
         history.pushState({}, '', 'else');
-        setTimeout(() => {
+        setTimeout(function () {
           expect(mf.currentHref).to.match(/else/);
           expect(mf.previousHref).to.match(/something/);
           history.pushState({}, '', 'else'); // should not update hrefs
-          setTimeout(() => {
+          setTimeout(function () {
             expect(mf.currentHref).to.match(/else/);
             expect(mf.previousHref).to.match(/something/);
             done();
@@ -172,7 +163,7 @@ describe('useUrlChangeTracker', function () {
 });
 
 describe('fallback', function () {
-  let mf;
+  var mf;
   before(function () {
     mf = window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {
       fallback: {
@@ -187,7 +178,31 @@ describe('fallback', function () {
       window.merlinFeedback.init('blackbird', 'dev', 'whiskey', /search/, {fallback: {mode: 'proxy'}});
     }).to.throwError();
   });
-  xit('should prepend fallback url to the request url when making requests', function () {
+  // xit('should prepend fallback url to the request url when making requests', function () {
     // this needs a programmatic test
+  // });
+});
+
+describe('SafeStorage', function () {
+  var _setItem, storage;
+  before(function () {
+    _setItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, value) {
+      if (this === window.localStorage) {
+        throw new Error('test');
+      } else {
+        _setItem.call(this, key, value);
+      }
+    };
+    storage = new merlinFeedback.SafeStorage(window.localStorage);
+  });
+  it('should fall back to in-memory storage if localStorage cannot be used', function () {
+    storage.setItem('test', 'test');
+    expect(storage._data).to.eql({
+      test: 'test'
+    });
+  });
+  after(function () {
+    Storage.prototype.setItem = _setItem;
   });
 });

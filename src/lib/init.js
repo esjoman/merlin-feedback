@@ -1,6 +1,7 @@
 // @flow
 
 import MerlinFeedback from './MerlinFeedback.js';
+import SafeStorage from './SafeStorage.js';
 
 type SerpRegex = RegExp | (url: string) => boolean;
 
@@ -44,5 +45,5 @@ export default function init(
   }
 
   let url = `https://search-${env}.search.blackbird.am/v1/${company}.${env}.${instance}/products/feedback`;
-  return new MerlinFeedback(url, serpRegex, window.localStorage, BB_CART, useUrlChangeTracker, fallback);
+  return new MerlinFeedback(url, serpRegex, new SafeStorage(window.localStorage), BB_CART, useUrlChangeTracker, fallback);
 }

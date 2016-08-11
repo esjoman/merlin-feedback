@@ -1,1 +1,2 @@
-export {init, Cart, MerlinFeedback} from '../lib/index.js';
+import 'fetch';
+export {init, Cart, SafeStorage, MerlinFeedback} from '../lib/index.js';

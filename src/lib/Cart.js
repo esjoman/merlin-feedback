@@ -1,5 +1,7 @@
 // @flow
 
+import SafeStorage from './SafeStorage.js';
+
 type Id = string | number;
 
 // CartObj is the intermediate form we operate on
@@ -16,10 +18,10 @@ function addOrPush(object: CartObj, key: Id, values: Array<Id>): CartObj {
 }
 
 export default class Cart {
-  storage: Storage;
+  storage: SafeStorage;
   key: string;
 
-  constructor(storage: Storage, key: string) {
+  constructor(storage: SafeStorage, key: string) {
     this.storage = storage;
     this.key = key;
   }

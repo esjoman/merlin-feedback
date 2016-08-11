@@ -2,6 +2,7 @@
 
 import Cart from './Cart.js';
 import UrlChangeTracker from './UrlChangeTracker.js';
+import SafeStorage from './SafeStorage.js';
 
 type Id = string | number;
 
@@ -36,7 +37,7 @@ const POSSIBLE_PARAMS: Array<string> = ['qid', 'q', 'numfound', 'docids', 'uid',
 export default class MerlinFeedback {
   url: string;
   serpRegex: SerpRegex;
-  storage: Storage;
+  storage: SafeStorage;
   cart: Cart;
   previousHref: string;
   currentHref: string;
@@ -45,7 +46,7 @@ export default class MerlinFeedback {
   fallback: ?FallbackOptions;
   useFallback: ?boolean;
 
-  constructor(url: string, serpRegex: SerpRegex, storage: Storage, storageKey: string, useUrlChangeTracker: boolean, fallback: ?FallbackOptions) {
+  constructor(url: string, serpRegex: SerpRegex, storage: SafeStorage, storageKey: string, useUrlChangeTracker: boolean, fallback: ?FallbackOptions) {
     this.url = url;
     this.serpRegex = serpRegex;
     this.storage = storage;
